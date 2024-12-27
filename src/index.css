@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: 56, 189, 248;
+  --secondary: 232, 121, 249;
+  --accent: 251, 191, 36;
+  --background: 17, 24, 39;
+  --foreground: 243, 244, 246;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600;
+  }
+
+  .electrifying-bg {
+    background-color: rgba(17, 24, 39, 0.8);
+    background-image:
+      linear-gradient(to right, rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(56, 189, 248, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: electrify 20s linear infinite;
+  }
+
+  .content-wrapper {
+    @apply w-4/5 mx-auto bg-gray-900 bg-opacity-80 rounded-lg shadow-lg;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(56, 189, 248, 0.8), 0 0 10px rgba(56, 189, 248, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(56, 189, 248, 1), 0 0 30px rgba(56, 189, 248, 0.8);
+  }
+}
+
+@keyframes electrify {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 20px;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
