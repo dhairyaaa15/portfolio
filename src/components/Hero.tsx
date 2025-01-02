@@ -128,7 +128,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-2xl mb-8 text-cyan-300"
+          className="text-2xl mb-8 font-serif gradient-text"
         >
           Full-Stack Developer | Generative AI Enthusiast
         </motion.p>

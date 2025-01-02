@@ -55,10 +55,10 @@
 
 @keyframes glow {
   0%, 100% {
-    text-shadow: 0 0 5px rgba(56, 189, 248, 0.8), 0 0 10px rgba(56, 189, 248, 0.5);
+    text-shadow: 0 0 2px rgba(56, 189, 248, 0.8), 0 0 6px rgba(56, 189, 248, 0.5);
   }
   50% {
-    text-shadow: 0 0 20px rgba(56, 189, 248, 1), 0 0 30px rgba(56, 189, 248, 0.8);
+    text-shadow: 0 0 2px rgba(56, 189, 248, 1), 0 0 8px rgba(56, 189, 248, 0.8);
   }
 }
 
@@ -76,7 +76,7 @@
 }
 
 .animate-pulse-slow {
-  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-glow {
