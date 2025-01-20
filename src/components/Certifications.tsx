@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import codeunnati from '../assets/edu.png';
 import skillup from '../assets/prompt.png';
@@ -10,7 +10,21 @@ interface Certification {
 }
 
 const Certifications: React.FC = () => {
-  const [flippedCards, setFlippedCards] = useState<{ [key: number]: boolean }>({});
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [clickedCard, setClickedCard] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const certifications: Certification[] = [
     {
@@ -25,11 +39,10 @@ const Certifications: React.FC = () => {
     },
   ];
 
-  const toggleCard = (index: number) => {
-    setFlippedCards(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
+  const handleCardInteraction = (index: number) => {
+    if (isMobile) {
+      setClickedCard(clickedCard === index ? null : index);
+    }
   };
 
   return (
@@ -52,54 +65,65 @@ const Certifications: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative h-96 sm:h-80 md:h-96"
-              style={{
-                perspective: '1000px'
-              }}
+              className="relative h-96 sm:h-80 md:h-96 group"
+              style={{ perspective: '1000px' }}
+              onMouseEnter={() => !isMobile && setHoveredCard(index)}
+              onMouseLeave={() => !isMobile && setHoveredCard(null)}
+              onClick={() => handleCardInteraction(index)}
             >
               <div
+                className="relative w-full h-full transition-transform duration-700 ease-in-out transform-gpu"
                 style={{
-                  transform: flippedCards[index] ? 'rotateY(180deg)' : 'rotateY(0)',
                   transformStyle: 'preserve-3d',
-                  transition: 'transform 0.8s',
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%'
+                  transform: (isMobile ? clickedCard === index : hoveredCard === index) 
+                    ? 'rotateY(180deg)' 
+                    : 'rotateY(0)',
                 }}
               >
                 {/* Front */}
                 <div
-                  className="absolute w-full h-full p-6 cursor-pointer bg-gray-800 bg-opacity-50 rounded-lg shadow-lg border border-cyan-500 border-opacity-30"
+                  className="absolute w-full h-full p-6 bg-gray-800 bg-opacity-50 rounded-lg shadow-lg border border-cyan-500 border-opacity-30 transition-all duration-300 group-hover:shadow-cyan-500/20"
                   style={{
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden'
                   }}
-                  onClick={() => toggleCard(index)}
                 >
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 text-cyan-400">
-                    {cert.title}
-                  </h3>
-                  <p className="text-sm sm:text-base md:text-cyan-100">Issued by: {cert.issuer}</p>
-                  <button className="text-cyan-400 mt-4 hover:text-cyan-300 text-sm sm:text-base">
-                    Click to View Certificate
-                  </button>
+                  <div className="h-full flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 text-cyan-400">
+                        {cert.title}
+                      </h3>
+                      <p className="text-sm sm:text-base text-cyan-100">
+                        Issued by: {cert.issuer}
+                      </p>
+                    </div>
+                    <p className="text-cyan-400 text-sm sm:text-base italic">
+                      {isMobile ? 'Tap to view certificate' : 'Hover to view certificate'}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Back */}
                 <div
-                  className="absolute w-full h-full cursor-pointer rounded-lg border border-cyan-500 border-opacity-30 overflow-hidden"
+                  className="absolute w-full h-full rounded-lg border border-cyan-500 border-opacity-30 overflow-hidden transition-all duration-300 group-hover:shadow-cyan-500/20"
                   style={{
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
                     transform: 'rotateY(180deg)',
                   }}
-                  onClick={() => toggleCard(index)}
                 >
                   <img 
                     src={cert.imageUrl} 
                     alt={cert.title}
                     className="w-full h-full object-contain bg-gray-800 bg-opacity-50 p-2"
                   />
+                  {isMobile && (
+                    <div className="absolute bottom-4 left-0 right-0 text-center">
+                      <p className="text-cyan-400 text-sm italic">
+                        Tap again to flip back
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
