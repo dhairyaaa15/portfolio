@@ -1,5 +1,6 @@
 import './App.css'
 import About from './components/About'
+import Achievements from './components/Achievements'
 import Certifications from './components/Certifications'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
@@ -28,6 +29,7 @@ function App() {
           <Hero />
           <About />
           <Skills />
+          <Achievements/>
           <Projects />
           <Certifications />
           <Contact />

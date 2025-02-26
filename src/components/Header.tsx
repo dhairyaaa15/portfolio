@@ -7,7 +7,7 @@ const Header: React.FC = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const menuItems = ['Projects', 'Skills', 'Certifications', 'Contact'];
+  const menuItems = ['Projects','Achievements', 'Skills', 'Certifications', 'Contact'];
 
   useEffect(() => {
     const handleScroll = () => {

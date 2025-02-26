@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 const About: React.FC = () => {
   return (
     <section id="about" className="py-20">
-      <div className="container mx-auto px-8 w-full sm:max-w-3xl">
+      <div className="container mx-auto px-1 w-full sm:max-w-3xl">
         <motion.h2
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}

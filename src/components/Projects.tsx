@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ExternalLink, Github } from 'lucide-react';
+// import { ExternalLink, Github } from 'lucide-react';
 import chatbotimg from '../assets/6f2a90183090d93624c62d6af49e80856a57c566.jpg';
 import inventoryimg from '../assets/a7aa98f5f05ffad8666b8aa82a65274bbf9d68ef.jpg';
 import pokenftimg from '../assets/53dcfe5fb69e4578af18cadab8505a1f.jpg';
@@ -95,7 +95,7 @@ const Projects: React.FC = () => {
                     </span>
                   ))}
                 </div>
-                <div className="flex justify-between items-center">
+                {/* <div className="flex justify-between items-center">
                   <a
                     href={project.liveLink || '#'}  // Use '#' when there's no link
                     target="_blank"
@@ -116,7 +116,7 @@ const Projects: React.FC = () => {
                     <Github className="w-4 h-4 mr-1" />
                     {project.githubLink ? 'GitHub' : 'Coming Soon'}
                   </a>
-                </div>
+                </div> */}
               </div>
             </motion.div>
           ))}
