@@ -22,6 +22,7 @@ import * as THREE from "three";
 // replace with your own imports, see the usage snippet for details
 import cardGLB from "../assets/card.glb";
 import lanyard from "../assets/lanyard.png";
+import profile from "../assets/profile.png";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
@@ -113,11 +114,54 @@ function Band({ maxSpeed = 50, minSpeed = 0 }: BandProps) {
     linearDamping: 4,
   };
 
+  // Create custom card geometry with proper UV mapping and rounded corners
+  const cardGeometry = new THREE.PlaneGeometry(1.6, 2.25, 32, 32);
+  
+  // Create rounded corners by modifying vertices
+  const positions = cardGeometry.attributes.position.array;
+  const cornerRadius = 0.15;
+  
+  for (let i = 0; i < positions.length; i += 3) {
+    const x = positions[i];
+    const y = positions[i + 1];
+    
+    // Check if vertex is in corner regions
+    const absX = Math.abs(x);
+    const absY = Math.abs(y);
+    
+    if (absX > 0.8 - cornerRadius && absY > 1.125 - cornerRadius) {
+      // Calculate distance from corner center
+      const cornerX = Math.sign(x) * (0.8 - cornerRadius);
+      const cornerY = Math.sign(y) * (1.125 - cornerRadius);
+      const dx = x - cornerX;
+      const dy = y - cornerY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance > cornerRadius) {
+        // Move vertex to create rounded corner
+        const angle = Math.atan2(dy, dx);
+        positions[i] = cornerX + Math.cos(angle) * cornerRadius;
+        positions[i + 1] = cornerY + Math.sin(angle) * cornerRadius;
+      }
+    }
+  }
+  
+  cardGeometry.attributes.position.needsUpdate = true;
+  cardGeometry.computeVertexNormals();
+  
   const { nodes, materials } = useGLTF(cardGLB) as any;
   const texture = useTexture(lanyard);
+  const profileTexture = useTexture(profile);
+  
+  // Configure profile texture properly
+  profileTexture.flipY = false; // Flip Y to fix upside-down image
+  profileTexture.wrapS = THREE.ClampToEdgeWrapping;
+  profileTexture.wrapT = THREE.ClampToEdgeWrapping;
+  profileTexture.repeat.set(1, 1);
+  profileTexture.offset.set(0, 0);
+  
   const [curve] = useState(
-    () =>
-      new THREE.CatmullRomCurve3([
+    () => new THREE.CatmullRomCurve3([
         new THREE.Vector3(),
         new THREE.Vector3(),
         new THREE.Vector3(),
@@ -262,14 +306,28 @@ function Band({ maxSpeed = 50, minSpeed = 0 }: BandProps) {
               );
             }}
           >
-            <mesh geometry={nodes.card.geometry}>
+            {/* Front face with profile texture */}
+            <mesh geometry={cardGeometry} position={[0, 0, 0.01]}>
               <meshPhysicalMaterial
-                map={materials.base.map}
+                map={profileTexture}
                 map-anisotropy={16}
                 clearcoat={1}
                 clearcoatRoughness={0.15}
                 roughness={0.9}
                 metalness={0.8}
+                side={THREE.FrontSide}
+              />
+            </mesh>
+            {/* Back face with same profile texture */}
+            <mesh geometry={cardGeometry} position={[0, 0, -0.01]} rotation={[0, Math.PI, 0]}>
+              <meshPhysicalMaterial
+                map={profileTexture}
+                map-anisotropy={16}
+                clearcoat={1}
+                clearcoatRoughness={0.15}
+                roughness={0.9}
+                metalness={0.8}
+                side={THREE.FrontSide}
               />
             </mesh>
             <mesh
