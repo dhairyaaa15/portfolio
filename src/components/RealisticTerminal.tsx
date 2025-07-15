@@ -309,7 +309,7 @@ Ready to explore? Try any command above! 🚀
     return lines.join('\n│  ');
   };
 
-  const executeCommand = (cmd: string): { content: string; type: 'output' | 'error' | 'success' } => {
+  const executeCommand = (cmd: string): { content: string; type: 'output' | 'error' | 'success' | 'info' } => {
     const command = cmd.trim().toLowerCase();
     
     switch (command) {
