@@ -1,20 +1,45 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+interface TerminalEntry {
+  type: 'command' | 'output' | 'error' | 'success' | 'info';
+  content: string;
+  path?: string;
+  user?: string;
+  host?: string;
+}
+
 const RealisticTerminal = () => {
   const [input, setInput] = useState('');
-  const [history, setHistory] = useState([]);
-  const [commandHistory, setCommandHistory] = useState([]);
+  const [history, setHistory] = useState<TerminalEntry[]>([]);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [currentPath, setCurrentPath] = useState('/home/user');
-  const [username] = useState('user');
-  const [hostname] = useState('localhost');
-  const inputRef = useRef(null);
-  const terminalRef = useRef(null);
+  const [currentPath] = useState('~/portfolio');
+  const [username] = useState('dhairya');
+  const [hostname] = useState('dev-machine');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
+    // Add welcome message
+    setHistory([{
+      type: 'info',
+      content: `Welcome to Dhairya's Portfolio Terminal v2.0
+
+🚀 Available Commands:
+  about       - Learn about me
+  projects    - View my projects
+  skills      - Check my technical skills
+  achievements- See my achievements
+  contact     - Get my contact information
+  certifications - View my certifications
+  help        - Show this help message
+  clear       - Clear the terminal
+  
+Type any command to get started!`
+    }]);
   }, []);
 
   useEffect(() => {
@@ -23,160 +48,317 @@ const RealisticTerminal = () => {
     }
   }, [history]);
 
-  const fileSystem = {
-    '/home/user': {
-      'Documents': 'directory',
-      'Downloads': 'directory',
-      'Desktop': 'directory',
-      'Pictures': 'directory',
-      'Music': 'directory',
-      'Videos': 'directory',
-      '.bashrc': 'file',
-      '.vimrc': 'file',
-      'project.txt': 'file',
-      'README.md': 'file'
+  const projects = [
+    {
+      title: 'PokéNFT Website',
+      description: 'Evolution and marketplace components for Pokémon NFTs. Features cool text styles, timer features, and a consistent dark theme.',
+      tags: ['React', 'TypeScript', 'Web3.js', 'Tailwind CSS'],
+      status: 'In Development'
     },
-    '/home/user/Documents': {
-      'report.pdf': 'file',
-      'notes.txt': 'file',
-      'work': 'directory'
+    {
+      title: 'AI Playlist Maker',
+      description: 'Generates playlists based on user prompts. Integrated with Spotify API for exporting playlists.',
+      tags: ['Python', 'Flask', 'Spotify API', 'NLP'],
+      status: 'Completed'
     },
-    '/home/user/Downloads': {
-      'file.zip': 'file',
-      'image.jpg': 'file',
-      'installer.deb': 'file'
+    {
+      title: 'Full-Stack Inventory Project',
+      description: 'An inventory management system developed using React (frontend), Node.js (backend), and integrated with TypeScript.',
+      tags: ['React', 'Node.js', 'TypeScript', 'MongoDB'],
+      status: 'Completed'
+    },
+    {
+      title: 'Generative AI Chatbot',
+      description: 'Industry-specific use cases with conversation summarization and progress tracking.',
+      tags: ['Python', 'TensorFlow', 'NLP', 'Flask'],
+      status: 'Completed'
     }
+  ];
+
+  const skills = {
+    'Frontend Development': ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'HTML&CSS'],
+    'Backend Development': ['Node.js', 'Flask', 'Express', 'MongoDB', 'SQL'],
+    'Generative AI': ['LangChain', 'Prompt Engineering', 'Open AI', 'Hugging Face', 'Machine Learning']
   };
 
-  const executeCommand = (cmd) => {
-    const [command, ...args] = cmd.trim().split(/\s+/);
+  const achievements = [
+    {
+      title: 'Winner – Illuminati\'25 Hackathon 🏆',
+      description: 'Secured 1st place at Illuminati 2025, hosted by ITM SLS Baroda University.',
+      details: [
+        'Developed Evencio, an NFT-based ticketing system that prioritizes real fans over scalpers',
+        'Integrated Spotify authentication to calculate a Fan Score based on listening activity',
+        'Implemented a resale revenue-sharing model, allowing artists to earn from secondary sales',
+        'Designed and built a user-friendly UI under tight time constraints'
+      ],
+      date: 'FEB-2025'
+    }
+  ];
+
+  const certifications = [
+    {
+      title: 'Foundation Course and Training on Python Programming, Data Analysis with Python, AI, and SAP Conversational AI Chatbot',
+      issuer: 'Code Unnati Program, Edunet Foundation'
+    },
+    {
+      title: 'Introduction to Prompt Engineering',
+      issuer: 'Skillup'
+    }
+  ];
+
+  const formatProjects = () => {
+    let output = `
+╭────────────────────────────────────────╮
+│              🚀 MY PROJECTS            │
+╰────────────────────────────────────────╯
+
+`;
+    projects.forEach((project, index) => {
+      output += `
+┌─ Project ${index + 1}: ${project.title}
+├─ Status: ${project.status}
+├─ Description: 
+│  ${wrapText(project.description, 50)}
+├─ Tech Stack: 
+│  ${wrapText(project.tags.join(' • '), 50)}
+└────────────────────────────────────────
+
+`;
+    });
+    return output;
+  };
+
+  const formatSkills = () => {
+    let output = `
+╭────────────────────────────────────────╮
+│           💻 TECHNICAL SKILLS          │
+╰────────────────────────────────────────╯
+
+`;
+    Object.entries(skills).forEach(([category, skillList]) => {
+      output += `
+┌─ ${category}
+`;
+      skillList.forEach(skill => {
+        output += `├─ ✓ ${skill}
+`;
+      });
+      output += `└────────────────────────────────────────
+
+`;
+    });
+    return output;
+  };
+
+  const formatAchievements = () => {
+    let output = `
+╭────────────────────────────────────────╮
+│             🏆 ACHIEVEMENTS            │
+╰────────────────────────────────────────╯
+
+`;
+    achievements.forEach((achievement) => {
+      output += `
+┌─ ${achievement.title}
+├─ ${wrapText(achievement.description, 38)}
+├─ Date: ${achievement.date}
+├─ Key Highlights:
+`;
+      achievement.details.forEach(detail => {
+        const wrappedDetail = wrapText(detail, 36);
+        const lines = wrappedDetail.split('\n');
+        lines.forEach((line, idx) => {
+          output += `│  ${idx === 0 ? '•' : ' '} ${line}
+`;
+        });
+      });
+      output += `└────────────────────────────────────────
+
+`;
+    });
+    return output;
+  };
+
+  const formatCertifications = () => {
+    let output = `
+╭────────────────────────────────────────╮
+│           📜 CERTIFICATIONS            │
+╰────────────────────────────────────────╯
+
+`;
+    certifications.forEach((cert, index) => {
+      output += `
+┌─ Certification ${index + 1}:
+├─ Title: 
+│  ${wrapText(cert.title, 38)}
+├─ Issuer: ${cert.issuer}
+└────────────────────────────────────────
+
+`;
+    });
+    return output;
+  };
+
+  const formatAbout = () => {
+    return `
+╭────────────────────────────────────────╮
+│              👨‍💻 ABOUT ME              │
+╰────────────────────────────────────────╯
+
+Hey there! I'm Dhairya Chawda, a passionate 
+full-stack developer with expertise in building 
+robust and scalable web applications.
+
+🚀 My Journey:
+   • Full-stack development with React, 
+     TypeScript, Node.js
+   • Recently diving deep into Generative AI
+   • Worked on exciting AI projects during 
+     internship
+   • Always eager for new challenges in tech
+
+💡 What I Do:
+   • Build modern web applications
+   • Create AI-powered solutions
+   • Design intuitive user experiences
+   • Solve complex technical problems
+
+⚽ Beyond Code:
+   • Passionate about hiking, sports, cycling
+   • Played football at I-League and 
+     inter-district levels
+   • Believer in teamwork and perseverance
+
+📍 Location: Vadodara, Gujarat, India
+📧 Email: dhairychawda12@gmail.com
+
+Always learning, always building! 🌟
+`;
+  };
+
+  const formatContact = () => {
+    return `
+╭────────────────────────────────────────╮
+│            📞 CONTACT INFO             │
+╰────────────────────────────────────────╯
+
+📧 Email: dhairychawda12@gmail.com
+📍 Location: Vadodara, Gujarat, India
+
+🌐 Social Links:
+   • LinkedIn: 
+     linkedin.com/in/dhairya-chawda-464884233/
+   • GitHub: github.com/dhairyaaa15
+   • X (Twitter): x.com/dhairya_15_
+
+💼 Let's connect and build something 
+   amazing together!
+`;
+  };
+
+  const formatHelp = () => {
+    return `
+╭────────────────────────────────────────╮
+│           📖 HELP & COMMANDS           │
+╰────────────────────────────────────────╯
+
+Available Commands:
+
+🔹 about         - Learn about my background
+🔹 projects      - Explore my latest projects
+🔹 skills        - View my technical skills
+🔹 achievements  - See my accomplishments
+🔹 certifications- Check my certifications
+🔹 contact       - Get my contact info
+🔹 help          - Show this help message
+🔹 clear         - Clear the terminal screen
+
+Navigation Tips:
+• Use ↑/↓ arrow keys to browse command history
+• Use Tab for command auto-completion
+• Type 'clear' to start fresh
+
+Ready to explore? Try any command above! 🚀
+`;
+  };
+
+  // Helper function to wrap text
+  const wrapText = (text: string, maxLength: number): string => {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+      if ((currentLine + word).length > maxLength) {
+        if (currentLine) {
+          lines.push(currentLine.trim());
+          currentLine = word + ' ';
+        } else {
+          lines.push(word);
+          currentLine = '';
+        }
+      } else {
+        currentLine += word + ' ';
+      }
+    });
+
+    if (currentLine) {
+      lines.push(currentLine.trim());
+    }
+
+    return lines.join('\n│  ');
+  };
+
+  const executeCommand = (cmd: string): { content: string; type: 'output' | 'error' | 'success' } => {
+    const command = cmd.trim().toLowerCase();
     
     switch (command) {
       case '':
-        return '';
+        return { content: '', type: 'output' };
         
-      case 'ls':
-        const path = args[0] || currentPath;
-        const contents = fileSystem[path];
-        if (!contents) {
-          return `ls: cannot access '${path}': No such file or directory`;
-        }
-        return Object.entries(contents)
-          .map(([name, type]) => type === 'directory' ? `\x1b[34m${name}\x1b[0m` : name)
-          .join('  ');
-          
-      case 'pwd':
-        return currentPath;
+      case 'about':
+        return { content: formatAbout(), type: 'success' };
         
-      case 'whoami':
-        return username;
+      case 'projects':
+        return { content: formatProjects(), type: 'success' };
         
-      case 'hostname':
-        return hostname;
+      case 'skills':
+        return { content: formatSkills(), type: 'success' };
         
-      case 'date':
-        return new Date().toString();
+      case 'achievements':
+        return { content: formatAchievements(), type: 'success' };
         
-      case 'uptime':
-        return ' 14:23:45 up 2 days,  3:45,  1 user,  load average: 0.52, 0.43, 0.39';
+      case 'certifications':
+        return { content: formatCertifications(), type: 'success' };
         
-      case 'ps':
-        return `  PID TTY          TIME CMD
- 1234 pts/0    00:00:01 bash
- 5678 pts/0    00:00:00 ps`;
+      case 'contact':
+        return { content: formatContact(), type: 'success' };
         
-      case 'free':
-        return `              total        used        free      shared  buff/cache   available
-Mem:        8048576     2834512     3251200      124832     1962864     4878336
-Swap:       2097148           0     2097148`;
-        
-      case 'df':
-        return `Filesystem     1K-blocks    Used Available Use% Mounted on
-/dev/sda1       20971520 8388608  12582912  40% /
-tmpfs            1024000       0   1024000   0% /dev/shm
-/dev/sda2      104857600 5242880  99614720   5% /home`;
-        
-      case 'cat':
-        if (!args[0]) {
-          return 'cat: missing file operand';
-        }
-        const filename = args[0];
-        const currentDir = fileSystem[currentPath];
-        if (!currentDir || !currentDir[filename]) {
-          return `cat: ${filename}: No such file or directory`;
-        }
-        if (currentDir[filename] === 'directory') {
-          return `cat: ${filename}: Is a directory`;
-        }
-        // Sample file contents
-        const fileContents = {
-          'project.txt': 'This is a sample project file.\nLine 2 of the file.\nEnd of file.',
-          'README.md': '# Project\n\nThis is a sample README file.\n\n## Installation\n\nRun `npm install`',
-          '.bashrc': '# ~/.bashrc\n\nalias ll="ls -la"\nalias la="ls -A"\nalias l="ls -CF"',
-          '.vimrc': '" Vim configuration\nset number\nset tabstop=4\nset expandtab'
-        };
-        return fileContents[filename] || 'Sample file content';
-        
-      case 'echo':
-        return args.join(' ');
+      case 'help':
+        return { content: formatHelp(), type: 'info' };
         
       case 'clear':
         setHistory([]);
-        return '';
+        return { content: '', type: 'output' };
         
-      case 'history':
-        return commandHistory.map((cmd, i) => `  ${i + 1}  ${cmd}`).join('\n');
+      case 'whoami':
+        return { content: 'dhairya - Full-Stack Developer & AI Enthusiast', type: 'output' };
         
-      case 'uname':
-        const flag = args[0];
-        if (flag === '-a') {
-          return 'Linux localhost 5.15.0-72-generic #79-Ubuntu SMP Wed Apr 19 08:22:18 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux';
-        }
-        return 'Linux';
+      case 'pwd':
+        return { content: currentPath, type: 'output' };
         
-      case 'which':
-        if (!args[0]) {
-          return 'which: missing operand';
-        }
-        const binaries = ['ls', 'cat', 'echo', 'ps', 'grep', 'vim', 'nano', 'git'];
-        if (binaries.includes(args[0])) {
-          return `/usr/bin/${args[0]}`;
-        }
-        return `which: no ${args[0]} in (/usr/local/bin:/usr/bin:/bin)`;
-        
-      case 'man':
-        if (!args[0]) {
-          return 'What manual page do you want?';
-        }
-        return `Manual page for ${args[0]} would be displayed here.
-Use 'q' to quit the manual page.`;
-        
-      case 'top':
-        return `top - 14:23:45 up 2 days,  3:45,  1 user,  load average: 0.52, 0.43, 0.39
-Tasks: 156 total,   1 running, 155 sleeping,   0 stopped,   0 zombie
-%Cpu(s):  2.3 us,  0.7 sy,  0.0 ni, 96.7 id,  0.3 wa,  0.0 hi,  0.0 si,  0.0 st
-
-  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
- 1234 user      20   0  123456   1234   1234 S   1.0   0.1   0:00.01 bash
- 5678 user      20   0   87654    876    876 R   0.5   0.1   0:00.00 top`;
-        
-      case 'env':
-        return `HOME=/home/user
-PATH=/usr/local/bin:/usr/bin:/bin
-SHELL=/bin/bash
-USER=user
-TERM=xterm-256color
-PWD=${currentPath}`;
-        
-      case 'exit':
-        return 'logout';
+      case 'date':
+        return { content: new Date().toString(), type: 'output' };
         
       default:
-        return `bash: ${command}: command not found`;
+        return { 
+          content: `Command '${command}' not found. Type 'help' to see available commands.`, 
+          type: 'error' 
+        };
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (historyIndex < commandHistory.length - 1) {
@@ -196,8 +378,8 @@ PWD=${currentPath}`;
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      const commands = ['ls', 'cat', 'echo', 'pwd', 'whoami', 'date', 'ps', 'free', 'df', 'history', 'clear', 'uname', 'which', 'man', 'top', 'env', 'exit'];
-      const matches = commands.filter(cmd => cmd.startsWith(input));
+      const commands = ['about', 'projects', 'skills', 'achievements', 'certifications', 'contact', 'help', 'clear'];
+      const matches = commands.filter(cmd => cmd.startsWith(input.toLowerCase()));
       if (matches.length === 1) {
         setInput(matches[0]);
       }
@@ -207,7 +389,7 @@ PWD=${currentPath}`;
       setCommandHistory(prev => [...prev, input]);
       setHistoryIndex(-1);
       
-      const output = executeCommand(input);
+      const result = executeCommand(input);
       
       setHistory(prev => [...prev, {
         type: 'command',
@@ -217,10 +399,10 @@ PWD=${currentPath}`;
         host: hostname
       }]);
       
-      if (output) {
+      if (result.content) {
         setHistory(prev => [...prev, {
-          type: 'output',
-          content: output
+          type: result.type,
+          content: result.content
         }]);
       }
       
@@ -231,29 +413,27 @@ PWD=${currentPath}`;
     }
   };
 
-  const formatOutput = (content) => {
+  const formatOutput = (content: string, type: string) => {
+    const getTextColor = () => {
+      switch (type) {
+        case 'error': return 'text-red-400';
+        case 'success': return 'text-green-400';
+        case 'info': return 'text-cyan-400';
+        default: return 'text-white';
+      }
+    };
+
     return content.split('\n').map((line, i) => (
-      <div key={i} className="whitespace-pre">
-        {line.split('\x1b[34m').map((part, j) => {
-          if (part.includes('\x1b[0m')) {
-            const [coloredText, normalText] = part.split('\x1b[0m');
-            return (
-              <span key={j}>
-                <span className="text-blue-400">{coloredText}</span>
-                {normalText}
-              </span>
-            );
-          }
-          return part;
-        })}
+      <div key={i} className={`${getTextColor()}`} style={{ wordBreak: 'break-word' }}>
+        {line}
       </div>
     ));
   };
 
   const getPrompt = () => {
-    const pathDisplay = currentPath.replace('/home/user', '~');
+    const pathDisplay = currentPath.replace('/home/dhairya', '~');
     return (
-      <span className="text-green-400">
+      <span className="text-green-400 flex-shrink-0">
         {username}@{hostname}
         <span className="text-white">:</span>
         <span className="text-blue-400">{pathDisplay}</span>
@@ -263,33 +443,33 @@ PWD=${currentPath}`;
   };
 
   return (
-    <div className="h-screen bg-black text-white font-mono text-sm">
+    <div className="h-full bg-black text-white font-mono text-sm border border-gray-800 rounded-lg overflow-hidden">
       <div 
         ref={terminalRef}
-        className="h-full p-4 overflow-y-auto cursor-text"
+        className="h-full p-4 overflow-y-auto overflow-x-hidden cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
         {history.map((entry, index) => (
           <div key={index} className="mb-1">
             {entry.type === 'command' ? (
-              <div className="flex">
-                <span className="text-green-400">
+              <div className="flex flex-wrap">
+                <span className="text-green-400 flex-shrink-0">
                   {entry.user}@{entry.host}
                   <span className="text-white">:</span>
-                  <span className="text-blue-400">{entry.path.replace('/home/user', '~')}</span>
+                  <span className="text-blue-400">{entry.path?.replace('/home/dhairya', '~')}</span>
                   <span className="text-white">$ </span>
                 </span>
-                <span className="text-white">{entry.content}</span>
+                <span className="text-white break-all">{entry.content}</span>
               </div>
             ) : (
-              <div className="text-white">
-                {formatOutput(entry.content)}
+              <div className="overflow-x-hidden">
+                {formatOutput(entry.content, entry.type)}
               </div>
             )}
           </div>
         ))}
         
-        <div className="flex">
+        <div className="flex flex-wrap">
           {getPrompt()}
           <input
             ref={inputRef}
@@ -297,7 +477,7 @@ PWD=${currentPath}`;
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="bg-transparent text-white flex-1 outline-none caret-white"
+            className="bg-transparent text-white flex-1 min-w-0 outline-none caret-white"
             autoComplete="off"
             spellCheck="false"
           />
